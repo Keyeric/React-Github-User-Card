@@ -1,26 +1,59 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
+import {BrowserRouter as Router, Link} from 'react-router-dom';
+import axios from 'axios';
+import {Card} from 'reactstrap';
+import './index.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    user: [],
+    followers: [],
+    error: ''
+  };
+
+  componentDidMount() {
+    axios.all([
+      axios.get("https://api.github.com/users/Keyeric"),
+      axios.get("https://api.github.com/users/Keyeric/followers")
+    ])
+      .then(axios.spread((res1, res2) => {
+          console.log(res1.data)
+          console.log(res2.data)
+          this.setState({
+              user: res1.data,
+              followers: res2.data
+            })
+        }))
+        .catch(err => console.log("We broke something, somewhere...", err));
+  }
+
+  render() {
+    return (
+        <Router>
+      <div className="App">
+        <h1>Github Spotlight</h1>
+
+        <Card key={this.state.user.id}>
+            <img src={this.state.user.avatar_url} alt="Key's Github picture"/>
+            <h2>{this.state.user.name}</h2>
+            <p>Followers: {this.state.user.followers}</p>
+            <p>Following: {this.state.user.following}</p>
+        </Card>
+
+        <>
+            {this.state.followers.map(person => (
+            <Card key={person.id}>
+                <img src={person.avatar_url} alt={person.name}/>
+                <h2>{person.name}</h2>
+                <h3>{person.login}</h3>
+                <Link to= {person.html_url} />
+            </Card>
+            ))}
+        </>
+      </div>
+      </Router>
+    );
+  }
 }
 
 export default App;
