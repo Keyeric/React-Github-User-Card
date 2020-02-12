@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {BrowserRouter as Router, Link} from 'react-router-dom';
 import axios from 'axios';
-import {Card} from 'reactstrap';
 import './index.css';
 
 class App extends Component {
@@ -17,8 +16,6 @@ class App extends Component {
       axios.get("https://api.github.com/users/Keyeric/followers")
     ])
       .then(axios.spread((res1, res2) => {
-          console.log(res1.data)
-          console.log(res2.data)
           this.setState({
               user: res1.data,
               followers: res2.data
@@ -33,21 +30,21 @@ class App extends Component {
       <div className="App">
         <h1>Github Spotlight</h1>
 
-        <Card key={this.state.user.id}>
+        <div class="usercard" key={this.state.user.id}>
             <img src={this.state.user.avatar_url} alt="Key's Github picture"/>
             <h2>{this.state.user.name}</h2>
             <p>Followers: {this.state.user.followers}</p>
             <p>Following: {this.state.user.following}</p>
-        </Card>
+        </div>
 
         <>
             {this.state.followers.map(person => (
-            <Card key={person.id}>
+            <div class="usercard" key={person.id}>
                 <img src={person.avatar_url} alt={person.name}/>
                 <h2>{person.name}</h2>
                 <h3>{person.login}</h3>
                 <Link to= {person.html_url} />
-            </Card>
+            </div>
             ))}
         </>
       </div>
